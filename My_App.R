@@ -36,10 +36,12 @@ NewData$`Cell Line` <- replace(NewData$`Cell Line`, startsWith(NewData$`Cell Lin
 NewData$`Cell Line` <- replace(NewData$`Cell Line`, startsWith(NewData$`Cell Line`, 'MCF7'), 'MCF7')
 View(NewData)
 
+##just to check on one of the genes
 NewData %>%
   filter(NewData$ID == "TC01000001.hg.1") %>%
   ggplot(aes(x = `Cell Line`, y = `Expression Level`, col = `Cell Line`)) +
   geom_boxplot()
+
 
 cell_lines<-c("LetR1","LetR3","MCF7")
 ################### APPLICATION ###############
@@ -69,16 +71,13 @@ ui <- fluidPage(
 )
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  print("hi")
-  observe({
-    print("hello")
+  
     updateSelectizeInput(session, "genes", choices = genes, server = TRUE)
     updatePickerInput(session, "cell_lines", choices = cell_lines)
   })
   
   
   data <- reactive({
-    req(input$genes, input$cell_lines)
     dat <- NewData[NewData$ID == input$genes & NewData$`Cell Line` %in% input$cell_lines,]
     
     print("Something")
@@ -86,6 +85,7 @@ server <- function(input, output, session) {
   })
   print("Some")
   
+## to draw box plot as output
   output$distPlot <- renderPlot({
     ggplot(data(),aes(x=`Cell Line`,y=`Expression Level`,col=`Cell Line`, fill=`Cell Line`)) + geom_boxplot()
   })
